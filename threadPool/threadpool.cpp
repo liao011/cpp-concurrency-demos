@@ -33,7 +33,7 @@ void ThreadPool::workerLoop()
 		{
 			std::unique_lock<std::mutex> lock(mtx);
 			cv.wait(lock, [this] { return !tasks.empty() || stop; });//谓词
-			if (stop) return;//退出
+			if (stop&&tasks.empty()) return;//退出
 			task = std::move(tasks.front());//取任务
 			tasks.pop();
 		}
