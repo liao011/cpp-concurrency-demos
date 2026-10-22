@@ -4,4 +4,6 @@ project(threadpool CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(pool main.cpp threadpool.cpp threadpool.h)
+add_executable(pool        main.cpp         threadpool.h threadpool.cpp)
+add_executable(bench_long  bench_long.cpp   bench_common.h threadpool.h threadpool.cpp)
+add_executable(bench_short bench_short.cpp  bench_common.h threadpool.h threadpool.cpp)
