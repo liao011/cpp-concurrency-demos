@@ -17,15 +17,6 @@ ThreadPool::~ThreadPool()
 	cv.notify_all();
 }
 
-void ThreadPool::submit(std::function<void()> task)
-{
-	{
-		std::unique_lock<std::mutex> lock(mtx);
-		tasks.push(std::move(task));
-	}
-	cv.notify_one();
-}
-
 void ThreadPool::workerLoop()
 {
 	while (true){

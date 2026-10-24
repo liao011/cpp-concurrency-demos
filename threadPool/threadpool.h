@@ -5,6 +5,8 @@
 #include<queue>
 #include<vector>
 #include<functional>
+#include<memory>
+#include<future>
 
 class ThreadPool
 {
@@ -14,7 +16,19 @@ public:
 	//结束线程,停workers
 	~ThreadPool();
 	//入队+notify
-	void submit(std::function<void()>task);
+	template <typename F>
+	auto submit(F&& f) -> std::future<decltype(f())> {
+		using ReturnType = decltype(f());
+		
+		auto pt = std::make_shared<std::packaged_task<ReturnType()>>(std::forward<F>(f));
+		std::future<ReturnType> fut = pt->get_future();
+		{
+			std::lock_guard<std::mutex> lock(mtx);
+			tasks.push([pt] {(*pt)(); });
+		}
+		cv.notify_one();
+		return fut;
+	}
 	//禁止拷贝
 	ThreadPool(const ThreadPool&) = delete;
 	//禁止赋值
